@@ -15,11 +15,6 @@ apk add --no-cache \
 apk add --no-cache py3-pip python3-dev
 python -m pip install --break-system-packages --upgrade pip
 
-# HandBrake Packages
-apk add --no-cache \
-    autoconf automake busybox cmake g++ git jansson-dev lame-dev libass-dev libjpeg-turbo-dev libtheora-dev libtool libvorbis-dev libvpx-dev libxml2-dev m4 make meson nasm \
-    ninja numactl-dev opus-dev patch pkgconf python3 speex-dev tar x264-dev
-
 mkdir /Temp
 
 echo "Asia/Jakarta" >>/etc/timezone
@@ -33,14 +28,6 @@ cd /Temp/7z
 7z x 7z2600-linux-x64.tar
 mv 7zzs /usr/bin/7z
 chmod +x /usr/bin/7z
-
-# AniDL
-cd /Temp
-wget https://github.com/anidl/multi-downloader-nx/releases/latest/download/multi-downloader-nx-alpine-x64-cli.7z
-7z x multi-downloader-nx-alpine-x64-cli.7z
-cd /Temp/multi-downloader-nx-alpine-x64-cli
-mv aniDL /usr/bin/anidl
-chmod +x /usr/bin/anidl
 
 # Bun
 cd /root/Temp
@@ -84,19 +71,6 @@ git clone -c advice.detachedHead=false https://github.com/gpac/gpac.git .
 make
 make install
 
-# HandBrake
-cd /Temp
-mkdir HandBrake
-cd /Temp/HandBrake
-HandBrakeVersion=$(curl -s https://api.github.com/repos/HandBrake/HandBrake/releases/latest | awk '/tag_name/{print $4;exit}' FS='[""]')
-git clone -c advice.detachedHead=false --branch $HandBrakeVersion https://github.com/HandBrake/HandBrake.git .
-./configure --launch-jobs=$(nproc) --enable-qsv --disable-gtk --launch
-cd /Temp/HandBrake/build
-mv HandBrakeCLI /usr/bin/handbrake
-chmod +x /usr/bin/handbrake
-cd /Temp/HandBrake
-rm -rf .git
-
 # HDR10Plus-Tool
 cd /Temp
 wget https://github.com/quietvoid/hdr10plus_tool/releases/latest/download/hdr10plus_tool-1.7.1-x86_64-unknown-linux-musl.tar.gz
@@ -115,7 +89,7 @@ chmod +x /usr/bin/m3u8
 
 # NordVPN
 cd /Temp
-yes | sh <(curl -sSf https://downloads.nordcdn.com/apps/linux/install.sh)
+curl -sSf https://downloads.nordcdn.com/apps/linux/install.sh | yes | sh
 
 # Rclone
 cd /Temp
@@ -142,10 +116,6 @@ apk upgrade
 
 apk del \
     autoconf automake bash boost-dev ccache clang17-dev cmake curl-dev dpkg g++ gawk gcc gettext-dev jq libtool linux-headers make musl-dev musl-locales nodejs pv unzip xz zip
-
-apk del \
-    autoconf automake busybox cmake g++ git jansson-dev lame-dev libass-dev libjpeg-turbo-dev libtheora-dev libtool libvorbis-dev libvpx-dev libxml2-dev m4 make meson nasm \
-    ninja numactl-dev opus-dev patch pkgconf python3 speex-dev tar x264-dev
 
 rm -rf /root/.cache
 rm -rf /tmp/*

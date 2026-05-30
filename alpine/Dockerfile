@@ -1,9 +1,8 @@
 FROM alpine:latest AS builder
 
-ENV LANG=en_US.UTF-8 \
-    LANGUAGE=en_US:en \
-    LC_ALL=en_US.UTF-8 \
-    TZ=Asia/Jakarta
+ENV DEBIAN_FRONTEND=noninteractive
+
+ENV TZ=Asia/Jakarta
 
 COPY . /
 
