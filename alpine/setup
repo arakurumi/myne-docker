@@ -5,7 +5,7 @@ apk upgrade
 
 # Main Packages
 apk add --no-cache \
-    7zip aria2 coreutils curl fastfetch ffmpeg git libmagic mediainfo mkvtoolnix openjdk21-jre qbittorrent qbittorrent-nox sox tzdata wget
+    7zip aria2 coreutils curl fastfetch ffmpeg git libmagic mediainfo mkvtoolnix openjdk25-jre qbittorrent qbittorrent-nox sox tzdata wget
 
 # Build Packages
 apk add --no-cache \
@@ -22,10 +22,10 @@ cp /usr/share/zoneinfo/Asia/Jakarta /etc/localtime
 
 # 7Zip
 cd /Temp
-wget https://7-zip.org/a/7z2600-linux-x64.tar.xz
-7z x -o7z 7z2600-linux-x64.tar.xz
+wget https://7-zip.org/a/7z2601-linux-x64.tar.xz
+7z x -o7z 7z2601-linux-x64.tar.xz
 cd /Temp/7z
-7z x 7z2600-linux-x64.tar
+7z x 7z2601-linux-x64.tar
 mv 7zzs /usr/bin/7z
 chmod +x /usr/bin/7z
 
