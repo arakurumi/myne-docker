@@ -23,9 +23,9 @@ cp /usr/share/zoneinfo/Asia/Jakarta /etc/localtime
 # 7Zip
 cd /temp
 wget https://7-zip.org/a/7z2601-linux-x64.tar.xz
-7z x -o7z 7z2601-linux-x64.tar.xz
+7z x -o7z -y 7z2601-linux-x64.tar.xz
 cd /temp/7z
-7z x 7z2601-linux-x64.tar
+7z x -y 7z2601-linux-x64.tar
 mv 7zzs /usr/bin/7z
 chmod +x /usr/bin/7z
 
@@ -57,8 +57,8 @@ chmod +x /usr/bin/dovi_tool
 # Gost
 cd /temp
 wget https://github.com/ginuerzh/gost/releases/latest/download/gost_2.12.0_linux_amd64v3.tar.gz
-7z x gost_2.12.0_linux_amd64v3.tar.gz
-7z x gost_2.12.0_linux_amd64v3.tar
+7z x -y gost_2.12.0_linux_amd64v3.tar.gz
+7z x -y gost_2.12.0_linux_amd64v3.tar
 mv gost /usr/bin/gost
 chmod +x /usr/bin/gost
 
@@ -74,16 +74,16 @@ make install
 # HDR10Plus-Tool
 cd /temp
 wget https://github.com/quietvoid/hdr10plus_tool/releases/latest/download/hdr10plus_tool-1.7.1-x86_64-unknown-linux-musl.tar.gz
-7z x hdr10plus_tool-1.7.1-x86_64-unknown-linux-musl.tar.gz
-7z x hdr10plus_tool-1.7.1-x86_64-unknown-linux-musl.tar
+7z x -y hdr10plus_tool-1.7.1-x86_64-unknown-linux-musl.tar.gz
+7z x -y hdr10plus_tool-1.7.1-x86_64-unknown-linux-musl.tar
 mv hdr10plus_tool /usr/bin/hdr10plus_tool
 chmod +x /usr/bin/hdr10plus_tool
 
 # N-M3U8DL-Re
 cd /temp
 wget https://github.com/nilaoda/N_m3u8DL-RE/releases/latest/download/N_m3u8DL-RE_v0.5.1-beta_linux-musl-x64_20251029.tar.gz
-7z x N_m3u8DL-RE_v0.5.1-beta_linux-musl-x64_20251029.tar.gz
-7z x N_m3u8DL-RE_v0.5.1-beta_linux-musl-x64_20251029.tar
+7z x -y N_m3u8DL-RE_v0.5.1-beta_linux-musl-x64_20251029.tar.gz
+7z x -y N_m3u8DL-RE_v0.5.1-beta_linux-musl-x64_20251029.tar
 mv N_m3u8DL-RE /usr/bin/m3u8
 chmod +x /usr/bin/m3u8
 

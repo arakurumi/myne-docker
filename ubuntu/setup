@@ -28,9 +28,9 @@ dpkg-reconfigure --frontend=noninteractive tzdata
 # 7Zip
 cd /temp
 wget https://7-zip.org/a/7z2601-linux-x64.tar.xz
-7z x -o7z 7z2601-linux-x64.tar.xz
+7z x -o7z -y 7z2601-linux-x64.tar.xz
 cd /temp/7z
-7z x 7z2601-linux-x64.tar
+7z x -y 7z2601-linux-x64.tar
 mv 7zzs /usr/bin/7z
 chmod +x /usr/bin/7z
 
@@ -98,8 +98,8 @@ make install
 # HDR10Plus-Tool
 cd /temp
 wget https://github.com/quietvoid/hdr10plus_tool/releases/latest/download/hdr10plus_tool-1.7.2-x86_64-unknown-linux-musl.tar.gz
-7z x hdr10plus_tool-1.7.2-x86_64-unknown-linux-musl.tar.gz
-7z x hdr10plus_tool-1.7.2-x86_64-unknown-linux-musl.tar
+7z x -y hdr10plus_tool-1.7.2-x86_64-unknown-linux-musl.tar.gz
+7z x -y hdr10plus_tool-1.7.2-x86_64-unknown-linux-musl.tar
 mv hdr10plus_tool /usr/bin/hdr10plus_tool
 chmod +x /usr/bin/hdr10plus_tool
 
