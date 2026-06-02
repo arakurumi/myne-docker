@@ -15,39 +15,39 @@ apk add --no-cache \
 apk add --no-cache py3-pip python3-dev
 python -m pip install --break-system-packages --upgrade pip
 
-mkdir /Temp
+mkdir /temp
 
 echo "Asia/Jakarta" >>/etc/timezone
 cp /usr/share/zoneinfo/Asia/Jakarta /etc/localtime
 
 # 7Zip
-cd /Temp
+cd /temp
 wget https://7-zip.org/a/7z2601-linux-x64.tar.xz
 7z x -o7z 7z2601-linux-x64.tar.xz
-cd /Temp/7z
+cd /temp/7z
 7z x 7z2601-linux-x64.tar
 mv 7zzs /usr/bin/7z
 chmod +x /usr/bin/7z
 
 # Bun
-cd /root/Temp
+cd /temp
 curl -fsSL https://bun.sh/install | bash
 
 # Bento4
-cd /Temp
-mkdir Bento4
-cd /Temp/Bento4
+cd /temp
+mkdir bento4
+cd /temp/bento4
 git clone -c advice.detachedHead=false https://github.com/axiomatic-systems/Bento4.git .
 cmake -DCMAKE_BUILD_TYPE=Release .
 make -j$(nproc)
 make install
 
 # Code-Server
-cd /Temp
+cd /temp
 curl -fsSL https://code-server.dev/install.sh | sh
 
 # Dovi-Tool
-cd /Temp
+cd /temp
 wget https://github.com/quietvoid/dovi_tool/releases/latest/download/dovi_tool-2.3.2-x86_64-unknown-linux-musl.tar.gz
 7z x -y dovi_tool-2.3.2-x86_64-unknown-linux-musl.tar.gz
 7z x -y dovi_tool-2.3.2-x86_64-unknown-linux-musl.tar
@@ -55,7 +55,7 @@ mv dovi_tool /usr/bin/dovi_tool
 chmod +x /usr/bin/dovi_tool
 
 # Gost
-cd /Temp
+cd /temp
 wget https://github.com/ginuerzh/gost/releases/latest/download/gost_2.12.0_linux_amd64v3.tar.gz
 7z x gost_2.12.0_linux_amd64v3.tar.gz
 7z x gost_2.12.0_linux_amd64v3.tar
@@ -63,16 +63,16 @@ mv gost /usr/bin/gost
 chmod +x /usr/bin/gost
 
 # GPAC
-cd /Temp
-mkdir GPAC
-cd /Temp/GPAC
+cd /temp
+mkdir gpac
+cd /temp/gpac
 git clone -c advice.detachedHead=false https://github.com/gpac/gpac.git .
-./configure
-make
+./configure --static-bin
+make -j$(nproc)
 make install
 
 # HDR10Plus-Tool
-cd /Temp
+cd /temp
 wget https://github.com/quietvoid/hdr10plus_tool/releases/latest/download/hdr10plus_tool-1.7.1-x86_64-unknown-linux-musl.tar.gz
 7z x hdr10plus_tool-1.7.1-x86_64-unknown-linux-musl.tar.gz
 7z x hdr10plus_tool-1.7.1-x86_64-unknown-linux-musl.tar
@@ -80,7 +80,7 @@ mv hdr10plus_tool /usr/bin/hdr10plus_tool
 chmod +x /usr/bin/hdr10plus_tool
 
 # N-M3U8DL-Re
-cd /Temp
+cd /temp
 wget https://github.com/nilaoda/N_m3u8DL-RE/releases/latest/download/N_m3u8DL-RE_v0.5.1-beta_linux-musl-x64_20251029.tar.gz
 7z x N_m3u8DL-RE_v0.5.1-beta_linux-musl-x64_20251029.tar.gz
 7z x N_m3u8DL-RE_v0.5.1-beta_linux-musl-x64_20251029.tar
@@ -88,28 +88,28 @@ mv N_m3u8DL-RE /usr/bin/m3u8
 chmod +x /usr/bin/m3u8
 
 # NordVPN
-cd /Temp
+cd /temp
 curl -sSf https://downloads.nordcdn.com/apps/linux/install.sh | yes | sh
 
 # Rclone
-cd /Temp
+cd /temp
 curl https://rclone.org/install.sh | bash
 
 # Shaka-Packager
-cd /Temp
+cd /temp
 wget https://github.com/shaka-project/shaka-packager/releases/latest/download/packager-linux-x64
 mv packager-linux-x64 /usr/bin/shaka-packager
 chmod +x /usr/bin/shaka-packager
 
 # Usque
-cd /Temp
+cd /temp
 wget https://github.com/Diniboy1123/usque/releases/latest/download/usque_3.0.0_linux_amd64.zip
 7z x -y usque_3.0.0_linux_amd64.zip
 mv usque /usr/bin/usque
 chmod +x /usr/bin/usque
 
 cd /
-rm -rf /Temp
+rm -rf /temp
 
 apk update
 apk upgrade
