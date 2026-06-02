@@ -31,7 +31,6 @@ Across the three variants, the setup scripts install command line utilities and 
 - mediainfo
 - MKVToolNix
 - N_m3u8DL-RE, installed as `m3u8`
-- NordVPN CLI
 - Python 3 and pip
 - qBittorrent and qBittorrent-nox
 - rclone

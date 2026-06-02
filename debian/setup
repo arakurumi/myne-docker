@@ -113,10 +113,6 @@ wget https://github.com/nilaoda/N_m3u8DL-RE/releases/latest/download/N_m3u8DL-RE
 mv N_m3u8DL-RE /usr/bin/m3u8
 chmod +x /usr/bin/m3u8
 
-# NordVPN
-cd /temp
-yes | sh <(curl -sSf https://downloads.nordcdn.com/apps/linux/install.sh)
-
 # Rclone
 cd /temp
 curl https://rclone.org/install.sh | bash
