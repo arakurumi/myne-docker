@@ -5,7 +5,7 @@ apt upgrade --yes
 
 # Main Packages
 apt install --yes --no-install-recommends \
-    apt-utils aria2 ca-certificates curl default-jre-headless fonts-firacode git libmagic-dev locales mediainfo p7zip-full sox tzdata wget
+    apt-utils aria2 ca-certificates curl default-jre-headless git libmagic-dev locales mediainfo p7zip-full sox tzdata wget
 
 # Build Packages
 apt install --yes --no-install-recommends \

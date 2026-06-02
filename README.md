@@ -1,19 +1,20 @@
 # Docker-Myne
 
-Docker images for a personal media and development toolbox. This repository builds two Linux variants, `alpine` and `ubuntu`, and publishes them to Docker Hub as `arakurumi/myne`.
+Docker images for a personal media and development toolbox. This repository builds three Linux variants, `alpine`, `debian`, and `ubuntu`, and publishes them to Docker Hub as `arakurumi/myne`.
 
 ## Images
 
-| Tag                     | Base image      | Default shell   | Platform      |
-| ----------------------- | --------------- | --------------- | ------------- |
-| `arakurumi/myne:alpine` | `alpine:latest` | `/bin/sh`       | `linux/amd64` |
-| `arakurumi/myne:ubuntu` | `ubuntu:latest` | `/usr/bin/bash` | `linux/amd64` |
+| Tag                     | Base image           | Default shell   | Platform      |
+| ----------------------- | -------------------- | --------------- | ------------- |
+| `arakurumi/myne:alpine` | `alpine:latest`      | `/bin/sh`       | `linux/amd64` |
+| `arakurumi/myne:debian` | `debian:trixie-slim` | `/usr/bin/bash` | `linux/amd64` |
+| `arakurumi/myne:ubuntu` | `ubuntu:latest`      | `/usr/bin/bash` | `linux/amd64` |
 
 Both images use the `Asia/Jakarta` timezone and include a collection of media, download, networking, packaging, and development tools.
 
 ## Included Tools
 
-Across the two variants, the setup scripts install command line utilities and media tooling, including:
+Across the three variants, the setup scripts install command line utilities and media tooling, including:
 
 - 7-Zip
 - aria2
@@ -47,12 +48,16 @@ Package availability differs slightly between the Alpine and Ubuntu variants bec
 |-- alpine/
 |   |-- Dockerfile
 |   `-- setup
+|-- debian/
+|   |-- Dockerfile
+|   `-- setup
 |-- ubuntu/
 |   |-- Dockerfile
 |   `-- setup
 `-- .github/
     `-- workflows/
         |-- alpine.yml
+        |-- debian.yml
         `-- ubuntu.yml
 ```
 
@@ -65,6 +70,7 @@ Each image directory contains:
 
 ```sh
 docker pull arakurumi/myne:alpine
+docker pull arakurumi/myne:debian
 docker pull arakurumi/myne:ubuntu
 ```
 
@@ -74,6 +80,10 @@ Start an interactive shell:
 
 ```sh
 docker run --rm -it arakurumi/myne:alpine
+```
+
+```sh
+docker run --rm -it arakurumi/myne:debian
 ```
 
 ```sh
@@ -100,6 +110,12 @@ Build the Alpine image:
 docker build -t myne:alpine ./alpine
 ```
 
+Build the Debian image:
+
+```sh
+docker build -t myne:debian ./debian
+```
+
 Build the Ubuntu image:
 
 ```sh
@@ -110,14 +126,16 @@ The build can take a long time because several tools are downloaded from upstrea
 
 ## GitHub Actions
 
-This repository includes separate workflows for Alpine and Ubuntu images:
+This repository includes separate workflows for Alpine, Debian, and Ubuntu images:
 
 - `.github/workflows/alpine.yml`
+- `.github/workflows/debian.yml`
 - `.github/workflows/ubuntu.yml`
 
 The workflows build and push to Docker Hub image `arakurumi/myne` with the matching tag:
 
 - `alpine`
+- `debian`
 - `ubuntu`
 
 Workflows run when their image files change, on a daily schedule, or through manual `workflow_dispatch`.
@@ -130,12 +148,7 @@ The Docker Hub credentials must be available as repository secrets:
 ## Notes
 
 - Images are built for `linux/amd64`.
-- The Alpine variant installs `openjdk25-jre`; the Ubuntu variant installs `default-jre-headless`.
+- The Alpine variant installs `openjdk25-jre`; the Debian and Ubuntu variants install `default-jre-headless`.
 - The setup scripts use several upstream `latest` release URLs, so image contents can change between builds.
 - Build steps require internet access during `docker build`.
 - Temporary build files and package caches are removed near the end of each setup script to reduce final image size.
-
-## Credits
-
-- Docker images and repository: Kurumi.
-- README: written with assistance from OpenAI Codex.
