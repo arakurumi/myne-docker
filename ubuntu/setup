@@ -47,6 +47,12 @@ cmake -DCMAKE_BUILD_TYPE=Release .
 make -j$(nproc)
 make install
 
+# CCExtractor
+cd /temp
+wget https://github.com/CCExtractor/ccextractor/releases/latest/download/ccextractor-hardsubx_0.96.6_amd64.deb
+apt install --yes --no-install-recommends \
+    ./ccextractor-hardsubx_0.96.6_amd64.deb
+
 # Code-Server
 cd /temp
 curl -fsSL https://code-server.dev/install.sh | sh
