@@ -119,7 +119,7 @@ curl https://rclone.org/install.sh | bash
 
 # Shaka-Packager
 cd /temp
-wget https://github.com/shaka-project/shaka-packager/releases/latest/download/packager-linux-x64
+wget https://github.com/shaka-project/shaka-packager/releases/download/v2.6.1/packager-linux-x64
 mv packager-linux-x64 /usr/bin/shaka-packager
 chmod +x /usr/bin/shaka-packager
 
