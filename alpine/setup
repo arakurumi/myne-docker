@@ -11,7 +11,7 @@ apk upgrade
 
 # Main Packages
 apk add --no-cache \
-    aria2 coreutils curl fastfetch ffmpeg file git mediainfo mkvtoolnix openjdk25-jre sox tzdata wget
+    aria2 coreutils curl fastfetch ffmpeg file git mediainfo mkvtoolnix nodejs npm openjdk25-jre sox tzdata wget
 
 # Build Packages
 apk add --no-cache \
@@ -28,8 +28,9 @@ cp /usr/share/zoneinfo/Asia/Jakarta /etc/localtime
 
 # 7Zip
 cd /temp
-filename=$(curl -s https://7-zip.org/ | grep -o '7z[0-9]*\-linux-x64\.tar\.xz' | head -1)
-wget "https://7-zip.org/a/$filename"
+url=$(curl -sL https://7-zip.org/download.html | grep -o 'https://github.com[^"]*linux-x64\.tar\.xz' | head -1)
+wget "$url"
+filename=$(basename "$url")
 mkdir -p 7z
 xz -dc "$filename" | tar -xf - -C 7z
 cd /temp/7z
