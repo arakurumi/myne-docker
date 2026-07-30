@@ -11,11 +11,11 @@ apk upgrade
 
 # Main Packages
 apk add --no-cache \
-    7zip aria2 coreutils curl fastfetch ffmpeg git libmagic mediainfo mkvtoolnix openjdk25-jre qbittorrent qbittorrent-nox sox tzdata wget
+    aria2 coreutils curl fastfetch ffmpeg file git mediainfo mkvtoolnix openjdk25-jre sox tzdata wget
 
 # Build Packages
 apk add --no-cache \
-    autoconf automake bash boost-dev ccache clang17-dev cmake curl-dev dpkg g++ gawk gcc gettext-dev jq libtool linux-headers make musl-dev musl-locales nodejs pv unzip xz zip
+    autoconf automake bash boost-dev ccache clang18-dev cmake curl-dev dpkg g++ gawk gcc gettext-dev jq libtool linux-headers make musl-dev musl-locales nodejs pv unzip xz zip zlib-dev
 
 # Python Packages
 apk add --no-cache py3-pip python3-dev
@@ -132,7 +132,7 @@ apk update
 apk upgrade
 
 apk del \
-    autoconf automake bash boost-dev ccache clang17-dev cmake curl-dev dpkg g++ gawk gcc gettext-dev jq libtool linux-headers make musl-dev musl-locales nodejs pv unzip xz zip
+    autoconf automake bash boost-dev ccache clang18-dev cmake curl-dev dpkg g++ gawk gcc gettext-dev jq libtool linux-headers make musl-dev musl-locales nodejs pv unzip xz zip zlib-dev
 
 rm -rf /root/.cache
 rm -rf /tmp/*
