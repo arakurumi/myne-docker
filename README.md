@@ -10,7 +10,7 @@ Docker images for a personal media and development toolbox. This repository buil
 | `arakurumi/myne:debian` | `debian:trixie-slim` | `/usr/bin/bash` | `linux/amd64` |
 | `arakurumi/myne:ubuntu` | `ubuntu:latest`      | `/usr/bin/bash` | `linux/amd64` |
 
-Both images use the `Asia/Jakarta` timezone and include a collection of media, download, networking, packaging, and development tools.
+All three images use the `Asia/Jakarta` timezone and include a collection of media, download, networking, packaging, and development tools.
 
 ## Included Tools
 
@@ -27,18 +27,17 @@ Across the three variants, the setup scripts install command line utilities and 
 - GOST
 - GPAC / MP4Box
 - hdr10plus_tool
-- Java runtime
 - mediainfo
 - MKVToolNix
 - N_m3u8DL-RE, installed as `m3u8`
 - Python 3 and pip
-- qBittorrent and qBittorrent-nox
+- qbittorrent-nox
 - rclone
 - Shaka Packager
 - SoX
 - usque
 
-Package availability differs slightly between the Alpine and Ubuntu variants because each image uses its native package manager and setup flow.
+Package availability differs slightly across the three variants because each image uses its native package manager and setup flow.
 
 ## Repository Layout
 
@@ -53,6 +52,7 @@ Package availability differs slightly between the Alpine and Ubuntu variants bec
 |-- ubuntu/
 |   |-- Dockerfile
 |   `-- setup
+|-- .dockerignore
 `-- .github/
     `-- workflows/
         |-- alpine.yml
@@ -147,7 +147,6 @@ The Docker Hub credentials must be available as repository secrets:
 ## Notes
 
 - Images are built for `linux/amd64`.
-- The Alpine variant installs `openjdk25-jre`; the Debian and Ubuntu variants install `default-jre-headless`.
 - The setup scripts use several upstream `latest` release URLs, so image contents can change between builds.
 - Build steps require internet access during `docker build`.
 - Temporary build files and package caches are removed near the end of each setup script to reduce final image size.

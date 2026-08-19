@@ -129,11 +129,8 @@ chmod +x /usr/bin/usque
 cd /
 rm -rf /temp
 
-apk update
-apk upgrade
-
 apk del \
-    autoconf automake bash boost-dev ccache clang18-dev cmake curl-dev dpkg g++ gawk gcc gettext-dev jq libtool linux-headers make musl-dev musl-locales nodejs pv unzip xz zip zlib-dev
+    autoconf automake bash boost-dev ccache clang18-dev cmake curl-dev dpkg g++ gawk gcc gettext-dev jq libtool linux-headers make musl-dev musl-locales pv unzip xz zip zlib-dev
 
 rm -rf /root/.cache
 rm -rf /tmp/*
