@@ -11,17 +11,28 @@ apk upgrade
 
 # Main Packages
 apk add --no-cache \
-    aria2 coreutils curl fastfetch ffmpeg file git mediainfo mkvtoolnix nodejs npm openjdk25-jre sox tzdata wget
+    aria2 coreutils curl fastfetch ffmpeg file git mediainfo mkvtoolnix nodejs npm sox tzdata wget
 
 # Build Packages
 apk add --no-cache \
-    autoconf automake bash boost-dev ccache clang18-dev cmake curl-dev dpkg g++ gawk gcc gettext-dev jq libtool linux-headers make musl-dev musl-locales nodejs pv unzip xz zip zlib-dev
-
-# Python Packages
-apk add --no-cache py3-pip python3-dev
-python -m pip install --break-system-packages --upgrade pip
+    autoconf automake bash boost-dev ccache clang18-dev cmake curl-dev dpkg g++ gawk gcc gettext-dev jq libtool linux-headers make musl-dev musl-locales pv unzip xz zip zlib-dev
 
 mkdir /temp
+
+# Python
+cd /temp
+python_meta=$(curl -s "https://api.github.com/repos/astral-sh/python-build-standalone/releases/latest")
+python_name=$(echo "$python_meta" | grep '"name": "cpython-3\.' | grep -o 'cpython-3\.[0-9.]*+[0-9]*-x86_64-unknown-linux-musl-install_only\.tar\.gz' | grep -v 'rc' | awk -F'cpython-3\\.' '{split($2,a,"+"); split(a[1],b,"."); print b[1]*100000+b[2]*1000+b[3], $0}' | sort -n | tail -1 | sed 's/^[0-9]* //')
+python_tag=$(echo "$python_meta" | grep '"tag_name"' | sed 's/.*"tag_name": "\(.*\)",*/\1/')
+wget "https://github.com/astral-sh/python-build-standalone/releases/download/$python_tag/$python_name"
+mkdir -p /opt/python
+tar -xzf "$python_name" -C /opt/python --strip-components=1
+ln -sf /opt/python/bin/python3 /usr/local/bin/python3
+ln -sf /opt/python/bin/python3 /usr/local/bin/python
+ln -sf /opt/python/bin/pip3 /usr/local/bin/pip3
+ln -sf /opt/python/bin/pip3 /usr/local/bin/pip
+python -m pip install --upgrade pip
+cd /
 
 echo "Asia/Jakarta" >>/etc/timezone
 cp /usr/share/zoneinfo/Asia/Jakarta /etc/localtime

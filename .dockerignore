@@ -1,7 +1,4 @@
 .dockerignore
 .git/
 .github/
-alpine/
-debian/
 README.md
-ubuntu/
