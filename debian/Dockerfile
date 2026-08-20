@@ -2,7 +2,9 @@ FROM debian:trixie-slim AS builder
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-ENV LANG=en_US.UTF-8
+ENV LANG=C.UTF-8
+
+ENV LC_ALL=C.UTF-8
 
 ENV TZ=Asia/Jakarta
 
@@ -12,7 +14,9 @@ RUN /usr/bin/bash setup
 
 FROM debian:trixie-slim
 
-ENV LANG=en_US.UTF-8
+ENV LANG=C.UTF-8
+
+ENV LC_ALL=C.UTF-8
 
 ENV TZ=Asia/Jakarta
 

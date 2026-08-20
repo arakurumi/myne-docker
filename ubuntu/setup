@@ -34,9 +34,10 @@ ln -sf /opt/python/bin/pip3 /usr/local/bin/pip
 python -m pip install --upgrade pip
 cd /
 
+export LC_ALL=C.UTF-8
 locale-gen en_US.UTF-8
-update-locale LANG=en_US.UTF-8
 dpkg-reconfigure --frontend=noninteractive locales
+locale -a
 
 ln -fs /usr/share/zoneinfo/Asia/Jakarta /etc/localtime
 dpkg-reconfigure --frontend=noninteractive tzdata

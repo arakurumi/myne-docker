@@ -2,7 +2,9 @@ FROM ubuntu:latest AS builder
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-ENV LANG=en_US.UTF-8
+ENV LANG=C.UTF-8
+
+ENV LC_ALL=C.UTF-8
 
 ENV TZ=Asia/Jakarta
 COPY . /
@@ -11,7 +13,9 @@ RUN /usr/bin/bash setup
 
 FROM ubuntu:latest
 
-ENV LANG=en_US.UTF-8
+ENV LANG=C.UTF-8
+
+ENV LC_ALL=C.UTF-8
 
 ENV TZ=Asia/Jakarta
 
