@@ -1,27 +1,30 @@
-FROM debian:trixie-slim AS builder
+FROM python:3-slim AS python
 
-ENV DEBIAN_FRONTEND=noninteractive
+FROM node:lts-slim AS node
 
-ENV LANG=C.UTF-8
+FROM oven/bun:latest AS bun
 
-ENV LC_ALL=C.UTF-8
+FROM debian:trixie-slim AS base
 
-ENV TZ=Asia/Jakarta
+ENV DEBIAN_FRONTEND=noninteractive \
+LANG=en_US.UTF-8 \
+LC_ALL=C.UTF-8 \
+TZ=Asia/Jakarta
+
+FROM base AS builder
+
+COPY --from=node /usr/local/ /usr/local/
+
+COPY --from=python /usr/local/ /usr/local/
 
 COPY . /
 
 RUN /usr/bin/bash setup
 
-FROM debian:trixie-slim
-
-ENV LANG=C.UTF-8
-
-ENV LC_ALL=C.UTF-8
-
-ENV TZ=Asia/Jakarta
+FROM base AS runtime
 
 COPY --from=builder / /
 
-RUN rm -rf /var/lib/apt/lists /var/cache/apt /var/cache/debconf /tmp/* /root/.cache
+COPY --from=bun /usr/local/bin/ /usr/local/bin/
 
 CMD ["/usr/bin/bash"]

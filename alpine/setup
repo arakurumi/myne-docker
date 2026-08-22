@@ -1,150 +1,185 @@
 #!/bin/sh
+set -e
 
-github_latest() {
-    repo="$1"
-    pattern="$2"
-    curl -s "https://api.github.com/repos/$repo/releases/latest" | grep browser_download_url | grep "$pattern" | head -1 | sed 's/.*"browser_download_url": "\(.*\)"/\1/'
+fetch() {
+  curl --fail --location --silent --show-error --retry 5 --retry-delay 2 --retry-connrefused "$@"
 }
+
+latest_asset() {
+  repo="$1"
+  pattern="$2"
+  fetch "https://api.github.com/repos/$repo/releases/latest" |
+    awk -F'"' -v pat="$pattern" '
+      /browser_download_url/ && $4 ~ pat {
+        print $4
+        exit
+      }
+    '
+}
+
+case "$(uname -m)" in
+aarch64 | arm64)
+  sevenz_arch="arm64"
+  gost_arch="arm64"
+  rust_triple="aarch64-unknown-linux-musl"
+  nm3u8dlre_arch="arm64"
+  rclone_arch="arm64"
+  shaka_arch="arm64"
+  usque_arch="arm64"
+  ccextractor_arch=""
+  ;;
+x86_64 | amd64)
+  sevenz_arch="x64"
+  gost_arch="amd64"
+  rust_triple="x86_64-unknown-linux-musl"
+  nm3u8dlre_arch="x64"
+  rclone_arch="amd64"
+  shaka_arch="x64"
+  usque_arch="amd64"
+  ccextractor_arch="x86_64"
+  ;;
+*)
+  echo "Unsupported arch: $(uname -m)"
+  exit 1
+  ;;
+esac
 
 apk update
 apk upgrade
 
 # Main Packages
 apk add --no-cache \
-    aria2 coreutils curl fastfetch ffmpeg file git mediainfo mkvtoolnix nodejs npm sox tzdata wget
+  aria2 ca-certificates coreutils curl fastfetch ffmpeg file git libffi ncurses-libs readline sqlite-libs libstdc++ mediainfo mkvtoolnix sox tzdata wget
 
 # Build Packages
-apk add --no-cache \
-    autoconf automake bash boost-dev ccache clang18-dev cmake curl-dev dpkg g++ gawk gcc gettext-dev jq libtool linux-headers make musl-dev musl-locales pv unzip xz zip zlib-dev
+apk add --no-cache --virtual .build-deps \
+  autoconf automake bash boost-dev ccache clang-dev cmake curl-dev dpkg g++ gawk gcc gettext-dev jq libtool linux-headers make musl-dev pv unzip zip zlib-dev
 
-mkdir /temp
+python -m pip install --no-cache-dir --upgrade pip
 
-# Python
-cd /temp
-python_meta=$(curl -s "https://api.github.com/repos/astral-sh/python-build-standalone/releases/latest")
-python_name=$(echo "$python_meta" | grep '"name": "cpython-3\.' | grep -o 'cpython-3\.[0-9.]*+[0-9]*-x86_64-unknown-linux-musl-install_only\.tar\.gz' | grep -v 'rc' | awk -F'cpython-3\\.' '{split($2,a,"+"); split(a[1],b,"."); print b[1]*100000+b[2]*1000+b[3], $0}' | sort -n | tail -1 | sed 's/^[0-9]* //')
-python_tag=$(echo "$python_meta" | grep '"tag_name"' | sed 's/.*"tag_name": "\(.*\)",*/\1/')
-wget "https://github.com/astral-sh/python-build-standalone/releases/download/$python_tag/$python_name"
-mkdir -p /opt/python
-tar -xzf "$python_name" -C /opt/python --strip-components=1
-ln -sf /opt/python/bin/python3 /usr/local/bin/python3
-ln -sf /opt/python/bin/python3 /usr/local/bin/python
-ln -sf /opt/python/bin/pip3 /usr/local/bin/pip3
-ln -sf /opt/python/bin/pip3 /usr/local/bin/pip
-python -m pip install --upgrade pip
-cd /
-
-echo "Asia/Jakarta" >>/etc/timezone
+echo "Asia/Jakarta" >/etc/timezone
 cp /usr/share/zoneinfo/Asia/Jakarta /etc/localtime
 
-# 7Zip
-cd /temp
-url=$(curl -sL https://7-zip.org/download.html | grep -o 'https://github.com[^"]*linux-x64\.tar\.xz' | head -1)
-wget "$url"
-filename=$(basename "$url")
-mkdir -p 7z
-xz -dc "$filename" | tar -xf - -C 7z
-cd /temp/7z
-mv 7zzs /usr/bin/7z
-chmod +x /usr/bin/7z
+# 7-Zip
+mkdir -p /tmp/7z
+cd /tmp/7z
+apk add --no-cache --virtual .extract-deps tar xz
+sevenz_url=$(latest_asset "ip7z/7zip" "7z[0-9]+-linux-$sevenz_arch\\.tar\\.xz")
+sevenz_name="${sevenz_url##*/}"
+fetch --output "$sevenz_name" "$sevenz_url"
+tar -xf "$sevenz_name"
+mv 7zzs /usr/local/bin/7z
+chmod +x /usr/local/bin/7z
+apk del .extract-deps
 
-# Bun
-cd /temp
-curl -fsSL https://bun.sh/install | bash
+# Gost
+mkdir -p /tmp/gost
+cd /tmp/gost
+gost_url=$(latest_asset "ginuerzh/gost" "gost_[0-9]+\\.[0-9]+\\.[0-9]+_linux_$gost_arch\\.tar\\.gz")
+gost_name="${gost_url##*/}"
+fetch --output "$gost_name" "$gost_url"
+7z x "$gost_name"
+7z x "${gost_name%.gz}"
+mv gost /usr/local/bin/gost
+chmod +x /usr/local/bin/gost
 
 # Bento4
-cd /temp
-mkdir bento4
-cd /temp/bento4
-git clone -c advice.detachedHead=false https://github.com/axiomatic-systems/Bento4.git .
+git clone -c advice.detachedHead=false https://github.com/axiomatic-systems/Bento4.git /tmp/bento4
+cd /tmp/bento4
 cmake -DCMAKE_BUILD_TYPE=Release .
 make -j$(nproc)
 make install
 
 # Code-Server
-cd /temp
-curl -fsSL https://code-server.dev/install.sh | sh
+fetch https://code-server.dev/install.sh | sh
 
 # Dovi-Tool
-cd /temp
-url=$(github_latest "quietvoid/dovi_tool" "x86_64-unknown-linux-musl\\.tar\\.gz")
-wget "$url"
-filename=$(basename "$url")
-tar -xzf "$filename"
-mv dovi_tool /usr/bin/dovi_tool
-chmod +x /usr/bin/dovi_tool
-
-# Gost
-cd /temp
-url=$(github_latest "ginuerzh/gost" "linux_amd64v3\\.tar\\.gz")
-wget "$url"
-filename=$(basename "$url")
-tar -xzf "$filename"
-mv gost /usr/bin/gost
-chmod +x /usr/bin/gost
+mkdir -p /tmp/dovi
+cd /tmp/dovi
+dovi_url=$(latest_asset "quietvoid/dovi_tool" "$rust_triple\\.tar\\.gz")
+dovi_name="${dovi_url##*/}"
+fetch --output "$dovi_name" "$dovi_url"
+7z x "$dovi_name"
+7z x "${dovi_name%.gz}"
+mv dovi_tool /usr/local/bin/dovi_tool
+chmod +x /usr/local/bin/dovi_tool
 
 # GPAC
-cd /temp
-mkdir gpac
-cd /temp/gpac
-git clone -c advice.detachedHead=false https://github.com/gpac/gpac.git .
+git clone -c advice.detachedHead=false https://github.com/gpac/gpac.git /tmp/gpac
+cd /tmp/gpac
 ./configure --static-bin
 make -j$(nproc)
 make install
 
 # HDR10Plus-Tool
-cd /temp
-url=$(github_latest "quietvoid/hdr10plus_tool" "x86_64-unknown-linux-musl\\.tar\\.gz")
-wget "$url"
-filename=$(basename "$url")
-tar -xzf "$filename"
-mv hdr10plus_tool /usr/bin/hdr10plus_tool
-chmod +x /usr/bin/hdr10plus_tool
+mkdir -p /tmp/hdr10plus
+cd /tmp/hdr10plus
+hdr_url=$(latest_asset "quietvoid/hdr10plus_tool" "$rust_triple\\.tar\\.gz")
+hdr_name="${hdr_url##*/}"
+fetch --output "$hdr_name" "$hdr_url"
+7z x "$hdr_name"
+7z x "${hdr_name%.gz}"
+mv hdr10plus_tool /usr/local/bin/hdr10plus_tool
+chmod +x /usr/local/bin/hdr10plus_tool
 
 # CCExtractor
-cd /temp
-wget https://github.com/CCExtractor/ccextractor/releases/latest/download/ccextractor-linux-systemlibs-hardsubx-x86_64.tar.gz
-7z x -y ccextractor-linux-systemlibs-hardsubx-x86_64.tar.gz
-7z x -y ccextractor-linux-systemlibs-hardsubx-x86_64.tar
-mv ccextractor /usr/bin/ccextractor
-chmod +x /usr/bin/ccextractor
+if [ -n "$ccextractor_arch" ]; then
+  mkdir -p /tmp/ccextractor
+  cd /tmp/ccextractor
+  fetch --output ccextractor.tar.gz "https://github.com/CCExtractor/ccextractor/releases/latest/download/ccextractor-linux-systemlibs-hardsubx-$ccextractor_arch.tar.gz"
+  7z x ccextractor.tar.gz
+  7z x ccextractor.tar
+  mv ccextractor /usr/local/bin/ccextractor
+  chmod +x /usr/local/bin/ccextractor
+fi
 
-# N-M3U8DL-Re
-cd /temp
-url=$(github_latest "nilaoda/N_m3u8DL-RE" "linux-x64.*\\.tar\\.gz")
-wget "$url"
-filename=$(basename "$url")
-tar -xzf "$filename"
-mv N_m3u8DL-RE /usr/bin/m3u8
-chmod +x /usr/bin/m3u8
+# N-M3U8DL-RE
+mkdir -p /tmp/nm3u8dlre
+cd /tmp/nm3u8dlre
+nm3u8dlre_url=$(latest_asset "nilaoda/N_m3u8DL-RE" "linux-$nm3u8dlre_arch.*\\.tar\\.gz")
+nm3u8dlre_name="${nm3u8dlre_url##*/}"
+fetch --output "$nm3u8dlre_name" "$nm3u8dlre_url"
+7z x "$nm3u8dlre_name"
+7z x "${nm3u8dlre_name%.gz}"
+mv N_m3u8DL-RE /usr/local/bin/m3u8
+chmod +x /usr/local/bin/m3u8
 
 # Rclone
-cd /temp
-curl https://rclone.org/install.sh | bash
+mkdir -p /tmp/rclone
+cd /tmp/rclone
+rclone_url=$(latest_asset "rclone/rclone" "rclone-v[0-9]+\\.[0-9]+\\.[0-9]+-linux-$rclone_arch\\.zip")
+rclone_name="${rclone_url##*/}"
+fetch --output "$rclone_name" "$rclone_url"
+7z x "$rclone_name"
+mv "/tmp/rclone/${rclone_name%.zip}/rclone" /usr/local/bin/rclone
+chmod +x /usr/local/bin/rclone
 
 # Shaka-Packager
-cd /temp
-wget https://github.com/shaka-project/shaka-packager/releases/download/v2.6.1/packager-linux-x64
-mv packager-linux-x64 /usr/bin/shaka-packager
-chmod +x /usr/bin/shaka-packager
+mkdir -p /tmp/shaka
+cd /tmp/shaka
+shaka_url=$(latest_asset "shaka-project/shaka-packager" "packager-linux-$shaka_arch$")
+shaka_name="${shaka_url##*/}"
+fetch --output "$shaka_name" "$shaka_url"
+mv "$shaka_name" /usr/local/bin/shaka-packager
+chmod +x /usr/local/bin/shaka-packager
 
 # Usque
-cd /temp
-url=$(github_latest "Diniboy1123/usque" "linux_amd64\\.zip")
-wget "$url"
-filename=$(basename "$url")
-7z x -y "$filename"
-mv usque /usr/bin/usque
-chmod +x /usr/bin/usque
+mkdir -p /tmp/usque
+cd /tmp/usque
+usque_url=$(latest_asset "Diniboy1123/usque" "linux_$usque_arch\\.zip")
+usque_name="${usque_url##*/}"
+fetch --output "$usque_name" "$usque_url"
+7z x "$usque_name"
+mv usque /usr/local/bin/usque
+chmod +x /usr/local/bin/usque
 
 cd /
-rm -rf /temp
+rm -rf /tmp/*
 
-apk del \
-    autoconf automake bash boost-dev ccache clang18-dev cmake curl-dev dpkg g++ gawk gcc gettext-dev jq libtool linux-headers make musl-dev musl-locales pv unzip xz zip zlib-dev
+apk del .build-deps
 
 rm -rf /root/.cache
-rm -rf /tmp/*
 rm -rf /var/cache/apk/*
+rm -rf /var/tmp/*
 rm -rf Dockerfile
 rm -rf setup

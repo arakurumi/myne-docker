@@ -1,79 +1,108 @@
 # Docker-Myne
 
-Docker images for a personal media and development toolbox. This repository builds three Linux variants, `alpine`, `debian`, and `ubuntu`, and publishes them to Docker Hub as `arakurumi/myne`.
+Docker images for a personal media and development toolbox, published to Docker Hub as `arakurumi/myne`.
 
-## Images
+![Docker Pulls](https://img.shields.io/docker/pulls/arakurumi/myne)
 
-| Tag                     | Base image           | Default shell   | Platform      |
-| ----------------------- | -------------------- | --------------- | ------------- |
-| `arakurumi/myne:alpine` | `alpine:latest`      | `/bin/sh`       | `linux/amd64` |
-| `arakurumi/myne:debian` | `debian:trixie-slim` | `/usr/bin/bash` | `linux/amd64` |
-| `arakurumi/myne:ubuntu` | `ubuntu:latest`      | `/usr/bin/bash` | `linux/amd64` |
+---
 
-All three images use the `Asia/Jakarta` timezone and include a collection of media, download, networking, packaging, and development tools.
+## Overview
+
+Docker-Myne packages a curated set of media, download, networking, packaging, and development tools into small, ready-to-run Linux images. It is built for anyone who wants a single container with the utilities they use for media processing, downloading, streaming, and day-to-day development work.
+
+Two base variants are published — `alpine` and `debian` — so you can choose the distribution that best fits your environment. Both share the same toolset and are built for multiple architectures.
+
+---
+
+## Variants
+
+| Tag                     | Base image           | Default shell   | Timezone       | Platforms             |
+| ----------------------- | -------------------- | --------------- | -------------- | --------------------- |
+| `arakurumi/myne:alpine` | `alpine:latest`      | `/bin/sh`       | `Asia/Jakarta` | `linux/amd64`, `arm64` |
+| `arakurumi/myne:debian` | `debian:trixie-slim` | `/usr/bin/bash` | `Asia/Jakarta` | `linux/amd64`, `arm64` |
+
+---
+
+## Features
+
+- **Two base images** — choose Alpine or Debian to match your preferred environment.
+- **Curated toolset** — media, downloading, streaming, networking, and development utilities in one image.
+- **Multi-architecture** — built and published for both `linux/amd64` and `linux/arm64`.
+- **Prebuilt runtimes** — Bun, Node.js, and Python 3 with pip are bundled into the images.
+- **Automatic publishing** — GitHub Actions builds and pushes each image to Docker Hub on a daily schedule.
+- **Fixed timezone** — images run with `Asia/Jakarta` as the default timezone.
+
+---
 
 ## Included Tools
 
-Across the three variants, the setup scripts install command line utilities and media tooling, including:
+The `setup` scripts install a common set of command-line utilities and media tooling across both variants.
 
-- 7-Zip
-- aria2
-- Bento4
-- Bun
-- code-server
-- curl, wget, git
-- dovi_tool
+### Media & transcoding
+
 - FFmpeg / FFprobe
-- GOST
-- GPAC / MP4Box
-- hdr10plus_tool
 - mediainfo
 - MKVToolNix
-- N_m3u8DL-RE, installed as `m3u8`
-- Python 3 and pip
-- qbittorrent-nox
-- rclone
-- Shaka Packager
 - SoX
+
+### Download & transfer
+
+- aria2
+- N_m3u8DL-RE, installed as `m3u8`
+- rclone
+
+### Packaging, streaming & muxing
+
+- Bento4
+- GPAC / MP4Box
+- Shaka Packager
+- CCExtractor (amd64 only)
+
+### HDR & Dolby Vision tooling
+
+- dovi_tool
+- hdr10plus_tool
+
+### Networking
+
+- GOST
+
+### Development & runtime
+
+- Bun
+- code-server
+- Python 3 and pip
+- 7-Zip, curl, wget, git
+- fastfetch
 - usque
 
-Package availability differs slightly across the three variants because each image uses its native package manager and setup flow.
+> The Debian image additionally includes `qbittorrent-nox`.
 
-## Repository Layout
+---
 
-```text
-.
-|-- alpine/
-|   |-- Dockerfile
-|   `-- setup
-|-- debian/
-|   |-- Dockerfile
-|   `-- setup
-|-- ubuntu/
-|   |-- Dockerfile
-|   `-- setup
-|-- .dockerignore
-`-- .github/
-    `-- workflows/
-        |-- alpine.yml
-        |-- debian.yml
-        `-- ubuntu.yml
-```
+## Requirements
 
-Each image directory contains:
+- An OCI-compatible runtime — Docker Engine, Docker Desktop, or Podman.
+- Internet access during the build — the `setup` script downloads upstream releases and compiles some tools from source.
+- A `linux/amd64` or `linux/arm64` host.
 
-- `Dockerfile`: multi-stage image definition.
-- `setup`: package installation, source builds, downloaded binaries, timezone setup, and cleanup.
+---
 
-## Pull From Docker Hub
+## Installation
+
+Pull the image you want to use from Docker Hub:
 
 ```sh
 docker pull arakurumi/myne:alpine
-docker pull arakurumi/myne:debian
-docker pull arakurumi/myne:ubuntu
 ```
 
-## Run
+```sh
+docker pull arakurumi/myne:debian
+```
+
+---
+
+## Usage
 
 Start an interactive shell:
 
@@ -85,68 +114,96 @@ docker run --rm -it arakurumi/myne:alpine
 docker run --rm -it arakurumi/myne:debian
 ```
 
-```sh
-docker run --rm -it arakurumi/myne:ubuntu
-```
-
 Mount a local working directory:
 
 ```sh
-docker run --rm -it -v "$PWD:/workspace" -w /workspace arakurumi/myne:ubuntu
+docker run --rm -it -v "$PWD:/workspace" -w /workspace arakurumi/myne:debian
 ```
 
-On Windows PowerShell:
+Using Windows PowerShell:
 
 ```powershell
-docker run --rm -it -v "${PWD}:/workspace" -w /workspace arakurumi/myne:ubuntu
+docker run --rm -it -v "${PWD}:/workspace" -w /workspace arakurumi/myne:debian
 ```
 
-## Build Locally
+---
 
-Build the Alpine image:
+## Building Locally
 
 ```sh
 docker build -t myne:alpine ./alpine
 ```
 
-Build the Debian image:
-
 ```sh
 docker build -t myne:debian ./debian
 ```
 
-Build the Ubuntu image:
+> **Note:** The build takes a long time because several tools are downloaded from upstream releases and some components are compiled from source.
 
-```sh
-docker build -t myne:ubuntu ./ubuntu
+---
+
+## How It's Built
+
+Each image directory contains:
+
+- **`Dockerfile`** — a multi-stage build definition:
+  - `python`, `node`, and `bun` source stages provide the runtimes.
+  - A `builder` stage copies those runtimes in and runs the `setup` script (`RUN /bin/sh setup`).
+  - A slim `runtime` stage copies the final filesystem from `builder`, adds the Bun binary, and sets the default shell (`CMD`).
+- **`setup`** — an `sh` script that installs packages, downloads prebuilt binaries, builds selected tools from source (for example Bento4 and GPAC), sets the timezone, and removes build tools and caches.
+
+---
+
+## Repository Layout
+
+```text
+.
+|-- alpine/
+|   |-- Dockerfile
+|   `-- setup
+|-- debian/
+|   |-- Dockerfile
+|   `-- setup
+`-- .github/
+    `-- workflows/
+        |-- alpine.yml
+        `-- debian.yml
 ```
 
-The build can take a long time because several tools are downloaded from upstream releases and some components are built from source.
+---
 
-## GitHub Actions
+## Publishing to Docker Hub
 
-This repository includes separate workflows for Alpine, Debian, and Ubuntu images:
+Separate workflows build and push each image to Docker Hub as `arakurumi/myne` with the matching tag:
 
-- `.github/workflows/alpine.yml`
-- `.github/workflows/debian.yml`
-- `.github/workflows/ubuntu.yml`
+- `.github/workflows/alpine.yml` → `arakurumi/myne:alpine`
+- `.github/workflows/debian.yml` → `arakurumi/myne:debian`
 
-The workflows build and push to Docker Hub image `arakurumi/myne` with the matching tag:
+Both workflows:
 
-- `alpine`
-- `debian`
-- `ubuntu`
+- Trigger on pushes to their image directory (`alpine/**`, `debian/**`), on a daily `cron` schedule, and via manual `workflow_dispatch`.
+- Use QEMU and Buildx to build multi-platform images.
+- Authenticate to Docker Hub with the repository secrets `DOCKER_USERNAME` and `DOCKER_PASSWORD`.
 
-Workflows run when their image files change, on a daily schedule, or through manual `workflow_dispatch`.
-
-The Docker Hub credentials must be available as repository secrets:
-
-- `DOCKER_USERNAME`
-- `DOCKER_PASSWORD`
+---
 
 ## Notes
 
-- Images are built for `linux/amd64`.
-- The setup scripts use several upstream `latest` release URLs, so image contents can change between builds.
+- Images are built and published for both `linux/amd64` and `linux/arm64`.
+- CCExtractor is only built on `amd64`; it is skipped on `arm64`.
+- Both images bake in `TZ=Asia/Jakarta` and `LANG=en_US.UTF-8`; the Debian image also sets `DEBIAN_FRONTEND=noninteractive` and `LC_ALL=C.UTF-8`.
+- The `setup` scripts use several upstream `latest` release URLs, so image contents can change between builds.
 - Build steps require internet access during `docker build`.
-- Temporary build files and package caches are removed near the end of each setup script to reduce final image size.
+- Temporary build files and package caches are removed near the end of each `setup` script to reduce the final image size.
+
+---
+
+## License
+
+Per the Open Container Initiative labels written by the GitHub Actions workflows, this project is released under the [Unlicense](https://unlicense.org/).
+
+---
+
+## Credits
+
+- Author: Kurumi <kqruumi@gmail.com>, taken from the OCI image metadata used by the build workflows.

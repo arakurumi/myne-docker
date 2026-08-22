@@ -1,23 +1,28 @@
-FROM alpine:latest AS builder
+FROM python:alpine AS python
 
-ENV DEBIAN_FRONTEND=noninteractive
+FROM node:alpine AS node
 
-ENV LANG=en_US.UTF-8
+FROM oven/bun:alpine AS bun
 
-ENV TZ=Asia/Jakarta
+FROM alpine:latest AS base
+
+ENV LANG=en_US.UTF-8 \
+TZ=Asia/Jakarta
+
+FROM base AS builder
+
+COPY --from=node /usr/local/ /usr/local/
+
+COPY --from=python /usr/local/ /usr/local/
 
 COPY . /
 
 RUN /bin/sh setup
 
-FROM alpine:latest
-
-ENV LANG=en_US.UTF-8
-
-ENV TZ=Asia/Jakarta
+FROM base AS runtime
 
 COPY --from=builder / /
 
-RUN rm -rf /var/cache/apk /tmp/* /root/.cache
+COPY --from=bun /usr/local/bin/ /usr/local/bin/
 
 CMD ["/bin/sh"]
