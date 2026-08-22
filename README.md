@@ -50,6 +50,7 @@ The `setup` scripts install a common set of command-line utilities and media too
 - aria2
 - N_m3u8DL-RE, installed as `m3u8`
 - rclone
+- qBittorrent `qbittorrent-nox`
 
 ### Packaging, streaming & muxing
 
@@ -75,8 +76,6 @@ The `setup` scripts install a common set of command-line utilities and media too
 - 7-Zip, curl, wget, git
 - fastfetch
 - usque
-
-> The Debian image additionally includes `qbittorrent-nox`.
 
 ---
 

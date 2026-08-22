@@ -10,7 +10,7 @@ A curated media and development toolbox packaged as a ready-to-run Linux contain
 - **HDR & Dolby Vision** — dovi_tool, hdr10plus_tool
 - **Networking** — GOST
 - **Development & runtime** — Bun, code-server, Python 3 + pip, Node.js, 7-Zip, curl, wget, git, fastfetch, usque
-- **Debian variant only** — also includes qbittorrent-nox
+- **BitTorrent** — qBittorrent `qbittorrent-nox`
 
 Two base variants are published, each with its own default shell:
 

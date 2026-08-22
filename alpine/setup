@@ -49,7 +49,7 @@ apk upgrade
 
 # Main Packages
 apk add --no-cache \
-  aria2 ca-certificates coreutils curl fastfetch ffmpeg file git libffi ncurses-libs readline sqlite-libs libstdc++ mediainfo mkvtoolnix sox tzdata wget
+  aria2 ca-certificates coreutils curl fastfetch ffmpeg file git libffi ncurses-libs readline sqlite-libs libstdc++ mediainfo mkvtoolnix qbittorrent-nox sox tzdata wget
 
 # Build Packages
 apk add --no-cache --virtual .build-deps \
