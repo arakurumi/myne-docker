@@ -53,7 +53,7 @@ apk add --no-cache \
 
 # Build Packages
 apk add --no-cache --virtual .build-deps \
-  autoconf automake bash boost-dev ccache clang-dev cmake curl-dev dpkg g++ gawk gcc gettext-dev jq krb5-dev libtool linux-headers make musl-dev pv unzip zip zlib-dev
+  autoconf automake bash boost-dev ccache clang-dev cmake curl-dev dpkg g++ gawk gcc gettext-dev jq krb5-dev libtool linux-headers make musl-dev pv unzip zip zlib-dev zlib-static
 
 python -m pip install --no-cache-dir --upgrade pip
 
