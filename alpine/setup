@@ -49,11 +49,11 @@ apk upgrade
 
 # Main Packages
 apk add --no-cache \
-  aria2 ca-certificates coreutils curl fastfetch ffmpeg file git libffi ncurses-libs readline sqlite-libs libstdc++ mediainfo mkvtoolnix qbittorrent-nox sox tzdata wget
+  aria2 ca-certificates coreutils curl fastfetch ffmpeg file git krb5-libs libc6-compat libffi ncurses-libs readline sqlite-libs libstdc++ mediainfo mkvtoolnix qbittorrent-nox sox tzdata wget
 
 # Build Packages
 apk add --no-cache --virtual .build-deps \
-  autoconf automake bash boost-dev ccache clang-dev cmake curl-dev dpkg g++ gawk gcc gettext-dev jq libtool linux-headers make musl-dev pv unzip zip zlib-dev
+  autoconf automake bash boost-dev ccache clang-dev cmake curl-dev dpkg g++ gawk gcc gettext-dev jq krb5-dev libtool linux-headers make musl-dev pv unzip zip zlib-dev
 
 python -m pip install --no-cache-dir --upgrade pip
 
