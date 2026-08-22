@@ -178,10 +178,12 @@ chmod +x /usr/local/bin/usque
 cd /
 rm -rf /tmp/*
 
+# NOTE: tar must stay installed — dpkg (a core Debian package) depends on it.
+# xz-utils is kept only to be safe for the .tar.xz extraction; it is harmless.
 apt-get remove --yes \
   autoconf automake build-essential ccache clang cmake gettext gawk jq \
   libboost-dev libcurl4-openssl-dev libssl-dev libtool pkg-config pv \
-  tar unzip xz-utils zip zlib1g-dev
+  unzip xz-utils zip zlib1g-dev
 apt-get autoremove --yes
 apt-get autoclean
 apt-get clean
