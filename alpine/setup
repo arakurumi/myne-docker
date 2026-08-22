@@ -91,7 +91,9 @@ make -j$(nproc)
 make install
 
 # Code-Server
+npm config set unsafe-perm true
 fetch https://code-server.dev/install.sh | sh
+npm config delete unsafe-perm
 
 # Dovi-Tool
 mkdir -p /tmp/dovi
