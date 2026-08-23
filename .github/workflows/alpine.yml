@@ -15,7 +15,7 @@ permissions:
 
 jobs:
   build:
-    name: Build Image
+    name: Build and Push Image
 
     runs-on: ubuntu-26.04
 
