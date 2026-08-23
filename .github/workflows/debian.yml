@@ -15,7 +15,7 @@ permissions:
 
 jobs:
   build:
-    name: Docker.io
+    name: Build Image
 
     runs-on: ubuntu-26.04
 
@@ -32,7 +32,7 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Docker Metadata
+      - name: Set Up Docker Metadata
         id: meta
         uses: docker/metadata-action@v6
         with:
@@ -59,3 +59,46 @@ jobs:
             linux/arm64
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+  verify:
+    name: Verify Packages
+
+    needs: build
+
+    runs-on: ubuntu-26.04
+
+    steps:
+      - name: Pull Image
+        run: docker pull arakurumi/myne:debian
+
+      - name: Verify Installed Packages
+        run: |
+          docker run --rm arakurumi/myne:debian /bin/bash -c '
+            fail=0
+            # ccextractor is only built for x86_64/amd64; skip it on other archs
+            case "$(uname -m)" in
+              x86_64 | amd64) skip_ccextractor=0 ;;
+              *)              skip_ccextractor=1 ;;
+            esac
+            for tool in \
+              7z aria2 bun ccextractor code-server curl dovi_tool fastfetch ffmpeg \
+              file git gost hdr10plus_tool m3u8 mediainfo mkvextract mkvinfo mkvmerge \
+              mkvpropedit MP4Box mp4dump mp4info mp4mux pip python3 qbittorrent-nox \
+              rclone shaka-packager sox usque wget; do
+              if [ "$tool" = "ccextractor" ] && [ "$skip_ccextractor" -eq 1 ]; then
+                echo "skip  $tool (unsupported arch)"
+                continue
+              fi
+              if command -v "$tool" >/dev/null 2>&1; then
+                echo "ok    $tool"
+              else
+                echo "MISS  $tool"
+                fail=$((fail + 1))
+              fi
+            done
+            if [ "$fail" -gt 0 ]; then
+              echo ">>> $fail package(s) missing"
+              exit 1
+            fi
+            echo ">>> All packages installed correctly"
+          '
