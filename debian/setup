@@ -19,6 +19,7 @@ latest_asset() {
 
 case "$(uname -m)" in
 aarch64 | arm64)
+  aria2next_arch="aarch64"
   sevenz_arch="arm64"
   gost_arch="arm64"
   rust_triple="aarch64-unknown-linux-musl"
@@ -29,6 +30,7 @@ aarch64 | arm64)
   ccextractor_arch=""
   ;;
 x86_64 | amd64)
+  aria2next_arch="x86_64"
   sevenz_arch="x64"
   gost_arch="amd64"
   rust_triple="x86_64-unknown-linux-musl"
@@ -49,7 +51,7 @@ apt-get upgrade --yes
 
 # Main Packages
 apt-get install --yes --no-install-recommends \
-  aria2 ca-certificates coreutils curl fastfetch ffmpeg file git \
+  ca-certificates coreutils curl fastfetch ffmpeg file git \
   libffi8 libncursesw6 libreadline8 libsqlite3-0 libstdc++6 \
   mediainfo mkvtoolnix qbittorrent-nox sox tzdata wget
 
@@ -84,6 +86,16 @@ fetch --output "$gost_name" "$gost_url"
 7z x "${gost_name%.gz}"
 mv gost /usr/local/bin/gost
 chmod +x /usr/local/bin/gost
+
+# Aria2-Next
+mkdir -p /tmp/aria2next
+cd /tmp/aria2next
+aria2next_url=$(latest_asset "AnInsomniacy/aria2-next" "aria2-next-[0-9.]+-linux-$aria2next_arch$")
+aria2next_name="${aria2next_url##*/}"
+fetch --output "$aria2next_name" "$aria2next_url"
+chmod +x "$aria2next_name"
+mv "$aria2next_name" /usr/local/bin/aria2-next
+ln -s aria2-next /usr/local/bin/aria2c
 
 # Bento4
 git clone -c advice.detachedHead=false https://github.com/axiomatic-systems/Bento4.git /tmp/bento4

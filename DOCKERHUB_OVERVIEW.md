@@ -5,7 +5,7 @@ A curated media and development toolbox packaged as a ready-to-run Linux contain
 ## Features
 
 - **Media & transcoding** — FFmpeg/FFprobe, mediainfo, MKVToolNix, SoX
-- **Download & transfer** — aria2, m3u8 (N_m3u8DL-RE), rclone
+- **Download & transfer** — aria2-next (`aria2c`), m3u8 (N_m3u8DL-RE), rclone
 - **Packaging & streaming** — Bento4, GPAC/MP4Box, Shaka Packager, CCExtractor (amd64)
 - **HDR & Dolby Vision** — dovi_tool, hdr10plus_tool
 - **Networking** — GOST

@@ -81,7 +81,7 @@ jobs:
               *)              skip_ccextractor=1 ;;
             esac
             for tool in \
-              7z aria2c bun ccextractor code-server curl dovi_tool fastfetch ffmpeg \
+              7z aria2-next aria2c bun ccextractor code-server curl dovi_tool fastfetch ffmpeg \
               file git gost hdr10plus_tool m3u8 mediainfo mkvextract mkvinfo mkvmerge \
               mkvpropedit MP4Box mp4dump mp4info mp4mux pip python3 qbittorrent-nox \
               rclone shaka-packager sox usque wget; do

@@ -47,7 +47,7 @@ The `setup` scripts install a common set of command-line utilities and media too
 
 ### Download & transfer
 
-- aria2
+- aria2-next (`aria2c`) — modern aria2 fork with HTTP/3, ED2K, and native libtorrent
 - N_m3u8DL-RE, installed as `m3u8`
 - rclone
 - qBittorrent `qbittorrent-nox`
