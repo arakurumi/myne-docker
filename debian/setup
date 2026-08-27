@@ -20,6 +20,7 @@ latest_asset() {
 case "$(uname -m)" in
 aarch64 | arm64)
   aria2next_arch="aarch64"
+  ffmpeg_arch="linuxarm64-nonfree"
   sevenz_arch="arm64"
   gost_arch="arm64"
   rust_triple="aarch64-unknown-linux-musl"
@@ -31,6 +32,7 @@ aarch64 | arm64)
   ;;
 x86_64 | amd64)
   aria2next_arch="x86_64"
+  ffmpeg_arch="linux64-nonfree"
   sevenz_arch="x64"
   gost_arch="amd64"
   rust_triple="x86_64-unknown-linux-musl"
@@ -51,9 +53,9 @@ apt-get upgrade --yes
 
 # Main Packages
 apt-get install --yes --no-install-recommends \
-  ca-certificates coreutils curl fastfetch ffmpeg file git \
+  ca-certificates coreutils curl fastfetch file git \
   libffi8 libncursesw6 libreadline8 libsqlite3-0 libstdc++6 \
-  mediainfo mkvtoolnix qbittorrent-nox sox tzdata wget
+  mediainfo qbittorrent-nox sox tzdata wget
 
 # Build Packages
 apt-get install --yes --no-install-recommends \
@@ -75,17 +77,6 @@ fetch --output "$sevenz_name" "$sevenz_url"
 tar -xf "$sevenz_name"
 mv 7zzs /usr/local/bin/7z
 chmod +x /usr/local/bin/7z
-
-# Gost
-mkdir -p /tmp/gost
-cd /tmp/gost
-gost_url=$(latest_asset "ginuerzh/gost" "gost_[0-9]+\\.[0-9]+\\.[0-9]+_linux_$gost_arch\\.tar\\.gz")
-gost_name="${gost_url##*/}"
-fetch --output "$gost_name" "$gost_url"
-7z x "$gost_name"
-7z x "${gost_name%.gz}"
-mv gost /usr/local/bin/gost
-chmod +x /usr/local/bin/gost
 
 # Aria2-Next
 mkdir -p /tmp/aria2next
@@ -118,6 +109,29 @@ fetch --output "$dovi_name" "$dovi_url"
 mv dovi_tool /usr/local/bin/dovi_tool
 chmod +x /usr/local/bin/dovi_tool
 
+# FFmpeg
+mkdir -p /tmp/ffmpeg
+cd /tmp/ffmpeg
+ffmpeg_url=$(latest_asset "arakurumi/FFmpeg-Builds" "ffmpeg-n[0-9.]+-latest-$ffmpeg_arch-[0-9.]+\\.tar\\.xz")
+ffmpeg_name="${ffmpeg_url##*/}"
+fetch --output "$ffmpeg_name" "$ffmpeg_url"
+tar -xf "$ffmpeg_name"
+mv */bin/ffmpeg /usr/local/bin/ffmpeg
+mv */bin/ffprobe /usr/local/bin/ffprobe
+mv */bin/ffplay /usr/local/bin/ffplay
+chmod +x /usr/local/bin/ffmpeg /usr/local/bin/ffprobe /usr/local/bin/ffplay
+
+# Gost
+mkdir -p /tmp/gost
+cd /tmp/gost
+gost_url=$(latest_asset "ginuerzh/gost" "gost_[0-9]+\\.[0-9]+\\.[0-9]+_linux_$gost_arch\\.tar\\.gz")
+gost_name="${gost_url##*/}"
+fetch --output "$gost_name" "$gost_url"
+7z x "$gost_name"
+7z x "${gost_name%.gz}"
+mv gost /usr/local/bin/gost
+chmod +x /usr/local/bin/gost
+
 # GPAC
 git clone -c advice.detachedHead=false https://github.com/gpac/gpac.git /tmp/gpac
 cd /tmp/gpac
@@ -146,6 +160,16 @@ if [ -n "$ccextractor_arch" ]; then
   mv ccextractor /usr/local/bin/ccextractor
   chmod +x /usr/local/bin/ccextractor
 fi
+
+# MKVToolNix
+. /etc/os-release
+mkv_codename="${VERSION_CODENAME:-trixie}"
+fetch --output /usr/share/keyrings/mkvtoolnix.gpg \
+  https://mkvtoolnix.download/gpg-pub-moritzbunkus.txt
+printf 'deb [signed-by=/usr/share/keyrings/mkvtoolnix.gpg] https://mkvtoolnix.download/debian/ %s main\n' \
+  "$mkv_codename" >/etc/apt/sources.list.d/mkvtoolnix.download.list
+apt-get update
+apt-get install --yes --no-install-recommends mkvtoolnix
 
 # N-M3U8DL-RE
 mkdir -p /tmp/nm3u8dlre
@@ -190,8 +214,6 @@ chmod +x /usr/local/bin/usque
 cd /
 rm -rf /tmp/*
 
-# NOTE: tar must stay installed — dpkg (a core Debian package) depends on it.
-# xz-utils is kept only to be safe for the .tar.xz extraction; it is harmless.
 apt-get remove --yes \
   autoconf automake build-essential ccache clang cmake gettext gawk jq \
   libboost-dev libcurl4-openssl-dev libssl-dev libtool pkg-config pv \
