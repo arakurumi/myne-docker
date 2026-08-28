@@ -101,17 +101,17 @@ jobs:
                 mediainfo) mediainfo --Version 2>&1 ;;
                 mkvextract|mkvmerge|mkvinfo|mkvpropedit) mkvmerge --version 2>&1 ;;
                 MP4Box) MP4Box -version 2>&1 ;;
-                mp4dump|mp4info|mp4mux) mp4info --version 2>&1 ;;
+                mp4dump|mp4info|mp4mux) mp4info -version 2>&1 ;;
                 pip) pip --version 2>&1 ;;
                 python3) python3 --version 2>&1 ;;
                 qbittorrent-nox) qbittorrent-nox --version 2>&1 ;;
                 rclone) rclone version 2>&1 ;;
                 shaka-packager) shaka-packager --version 2>&1 ;;
                 sox) sox --version 2>&1 ;;
-                usque) usque --version 2>&1 ;;
+                usque) usque version 2>&1 ;;
                 wget) wget --version 2>&1 ;;
                 *) return 1 ;;
-              esac | grep -oE "v?[0-9]+(\.[0-9]+)+" | sed "s/^v//" | head -n 1
+              esac | grep -oE "([0-9]+\.)+[0-9]+" | sed "s/^v//" | head -n 1
             }
 
             # ccextractor is only built for x86_64/amd64; skip it on other archs
