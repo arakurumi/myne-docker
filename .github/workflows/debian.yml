@@ -75,30 +75,78 @@ jobs:
         run: |
           docker run --rm arakurumi/myne:debian /bin/bash -c '
             fail=0
+            count=0
+            green="\033[1;32m"
+            red="\033[1;31m"
+            bold="\033[1m"
+            dim="\033[2m"
+            reset="\033[0m"
+
+            getver() {
+              case "$1" in
+                7z) 7z i 2>&1 ;;
+                aria2-next|aria2c) aria2-next --version 2>&1 ;;
+                bun) bun --version 2>&1 ;;
+                ccextractor) ccextractor --version 2>&1 ;;
+                code-server) code-server --version 2>&1 ;;
+                curl) curl --version 2>&1 ;;
+                dovi_tool) dovi_tool --version 2>&1 ;;
+                fastfetch) fastfetch --version 2>&1 ;;
+                ffmpeg) ffmpeg -version 2>&1 ;;
+                file) file --version 2>&1 ;;
+                git) git --version 2>&1 ;;
+                gost) gost -V 2>&1 ;;
+                hdr10plus_tool) hdr10plus_tool --version 2>&1 ;;
+                m3u8) m3u8 --version 2>&1 ;;
+                mediainfo) mediainfo --Version 2>&1 ;;
+                mkvextract|mkvmerge|mkvinfo|mkvpropedit) mkvmerge --version 2>&1 ;;
+                MP4Box) MP4Box -version 2>&1 ;;
+                mp4dump|mp4info|mp4mux) mp4info --version 2>&1 ;;
+                pip) pip --version 2>&1 ;;
+                python3) python3 --version 2>&1 ;;
+                qbittorrent-nox) qbittorrent-nox --version 2>&1 ;;
+                rclone) rclone version 2>&1 ;;
+                shaka-packager) shaka-packager --version 2>&1 ;;
+                sox) sox --version 2>&1 ;;
+                usque) usque --version 2>&1 ;;
+                wget) wget --version 2>&1 ;;
+                *) return 1 ;;
+              esac | grep -oE "v?[0-9]+(\.[0-9]+)+" | sed "s/^v//" | head -n 1
+            }
+
             # ccextractor is only built for x86_64/amd64; skip it on other archs
             case "$(uname -m)" in
               x86_64 | amd64) skip_ccextractor=0 ;;
               *)              skip_ccextractor=1 ;;
             esac
+
+            printf "\n  ${bold}Verifying installed packages${reset}\n"
+            printf "  ${dim}--------------------------------------------------${reset}\n"
+
             for tool in \
               7z aria2-next aria2c bun ccextractor code-server curl dovi_tool fastfetch ffmpeg \
               file git gost hdr10plus_tool m3u8 mediainfo mkvextract mkvinfo mkvmerge \
               mkvpropedit MP4Box mp4dump mp4info mp4mux pip python3 qbittorrent-nox \
               rclone shaka-packager sox usque wget; do
               if [ "$tool" = "ccextractor" ] && [ "$skip_ccextractor" -eq 1 ]; then
-                echo "skip  $tool (unsupported arch)"
+                printf "  ${dim}  %-18s %s${reset}\n" "$tool" "skipped (unsupported arch)"
                 continue
               fi
+              count=$((count + 1))
               if command -v "$tool" >/dev/null 2>&1; then
-                echo "ok    $tool"
+                ver=$(getver "$tool")
+                [ -z "$ver" ] && ver="version unknown"
+                printf "  ${green}✔${reset}  %-18s %s\n" "$tool" "$ver"
               else
-                echo "MISS  $tool"
                 fail=$((fail + 1))
+                printf "  ${red}✖${reset}  %-18s %s\n" "$tool" "not found"
               fi
             done
+
+            printf "  ${dim}--------------------------------------------------${reset}\n"
             if [ "$fail" -gt 0 ]; then
-              echo ">>> $fail package(s) missing"
+              printf "  ${red}✖${reset}  %d of %d package(s) missing\n" "$fail" "$count"
               exit 1
             fi
-            echo ">>> All packages installed correctly"
+            printf "  ${green}✔${reset}  All %d packages installed correctly\n" "$count"
           '
