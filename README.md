@@ -147,7 +147,7 @@ Each image directory contains:
 
 - **`Dockerfile`** — a multi-stage build definition:
   - `python`, `node`, and `bun` source stages provide the runtimes.
-  - A `builder` stage copies those runtimes in and runs the `setup` script (`RUN /bin/sh setup`).
+  - A `builder` stage copies those runtimes in and runs the `setup` script (`RUN /bin/sh setup`), preceded by an `ARG CACHE_BUST` echo so a new daily value invalidates the cached layer.
   - A slim `runtime` stage copies the final filesystem from `builder`, adds the Bun binary, and sets the default shell (`CMD`).
 - **`setup`** — an `sh` script that installs packages, downloads prebuilt binaries, builds selected tools from source (for example Bento4 and GPAC), sets the timezone, and removes build tools and caches.
 
@@ -181,7 +181,10 @@ Separate workflows build and push each image to Docker Hub as `arakurumi/myne` w
 Both workflows:
 
 - Trigger on pushes to their image directory (`alpine/**`, `debian/**`), on a daily `cron` schedule, and via manual `workflow_dispatch`.
+- Resolve tags and OCI labels once in a `meta` job and reuse them in every build and in the final manifest.
 - Build each architecture on a native runner — `ubuntu-26.04` for `amd64` and `ubuntu-26.04-arm` for `arm64` — then merge the per-architecture digests into a single multi-arch manifest.
+- Reuse BuildKit's GitHub Actions layer cache per architecture (`scope=<variant>-<arch>`), and invalidate it once a day through the `CACHE_BUST` build arg instead of disabling the cache entirely.
+- Cancel superseded runs of the same workflow through `concurrency`.
 - Authenticate to Docker Hub with the repository secrets `DOCKER_USERNAME` and `DOCKER_PASSWORD`.
 
 ---

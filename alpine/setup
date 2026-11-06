@@ -98,13 +98,16 @@ ln -s aria2-next /usr/local/bin/aria2c
 # Bento4
 git clone -c advice.detachedHead=false https://github.com/axiomatic-systems/Bento4.git /tmp/bento4
 cd /tmp/bento4
-cmake -DCMAKE_BUILD_TYPE=Release .
+cmake -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_C_COMPILER_LAUNCHER=ccache \
+  -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+  .
 make -j$(nproc)
 make install
 
 # Code-Server
 export npm_config_unsafe_perm=true
-fetch https://code-server.dev/install.sh | NODE_OPTIONS=--jitless sh
+fetch https://code-server.dev/install.sh | sh
 unset npm_config_unsafe_perm
 
 # Dovi-Tool
@@ -121,7 +124,7 @@ chmod +x /usr/local/bin/dovi_tool
 # GPAC
 git clone -c advice.detachedHead=false https://github.com/gpac/gpac.git /tmp/gpac
 cd /tmp/gpac
-./configure --static-bin
+CC="ccache gcc" CXX="ccache g++" ./configure --static-bin
 make -j$(nproc)
 make install
 
