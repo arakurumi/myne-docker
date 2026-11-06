@@ -100,7 +100,7 @@ jobs:
           touch "/tmp/digests/${digest#sha256:}"
 
       - name: Upload Digest
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: digests-${{ env.CONTEXT_SUFFIX }}-${{ matrix.arch }}
           path: /tmp/digests/*
@@ -118,7 +118,7 @@ jobs:
 
     steps:
       - name: Download Digests
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           path: /tmp/digests
           pattern: digests-${{ env.CONTEXT_SUFFIX }}-*
