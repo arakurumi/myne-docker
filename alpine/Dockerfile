@@ -1,6 +1,6 @@
 FROM python:alpine AS python
 
-FROM node:lts-alpine AS node
+FROM node:24-alpine AS node
 
 FROM oven/bun:alpine AS bun
 

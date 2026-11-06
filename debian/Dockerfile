@@ -1,6 +1,6 @@
 FROM python:3-slim AS python
 
-FROM node:lts-slim AS node
+FROM node:24-slim AS node
 
 FROM oven/bun:latest AS bun
 
