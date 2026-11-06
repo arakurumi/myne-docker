@@ -181,7 +181,7 @@ Separate workflows build and push each image to Docker Hub as `arakurumi/myne` w
 Both workflows:
 
 - Trigger on pushes to their image directory (`alpine/**`, `debian/**`), on a daily `cron` schedule, and via manual `workflow_dispatch`.
-- Use QEMU and Buildx to build multi-platform images.
+- Build each architecture on a native runner — `ubuntu-26.04` for `amd64` and `ubuntu-26.04-arm` for `arm64` — then merge the per-architecture digests into a single multi-arch manifest.
 - Authenticate to Docker Hub with the repository secrets `DOCKER_USERNAME` and `DOCKER_PASSWORD`.
 
 ---

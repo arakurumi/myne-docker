@@ -104,7 +104,7 @@ make install
 
 # Code-Server
 export npm_config_unsafe_perm=true
-fetch https://code-server.dev/install.sh | sh
+fetch https://code-server.dev/install.sh | NODE_OPTIONS=--jitless sh
 unset npm_config_unsafe_perm
 
 # Dovi-Tool
