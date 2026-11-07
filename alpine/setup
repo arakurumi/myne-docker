@@ -46,6 +46,11 @@ x86_64 | amd64)
   ;;
 esac
 
+cat >/etc/apk/repositories <<'EOF'
+https://dl-cdn.alpinelinux.org/alpine/edge/main
+https://dl-cdn.alpinelinux.org/alpine/edge/community
+EOF
+
 apk update
 apk upgrade
 
