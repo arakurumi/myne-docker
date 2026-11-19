@@ -81,7 +81,7 @@ chmod +x /usr/local/bin/7z
 # Aria2-Next
 mkdir -p /tmp/aria2next
 cd /tmp/aria2next
-aria2next_url=$(latest_asset "AnInsomniacy/aria2-next" "aria2-next-[0-9.]+-linux-$aria2next_arch$")
+aria2next_url=$(latest_asset "arakurumi/aria2-next-builds" "aria2-next-[0-9.]+-linux-$aria2next_arch$")
 aria2next_name="${aria2next_url##*/}"
 fetch --output "$aria2next_name" "$aria2next_url"
 chmod +x "$aria2next_name"
